@@ -46,6 +46,8 @@ create_yum_repo() {
                     ln -s ${_version} "latest"
                 elif [[ "x${_version}" == "x7" ]]; then
                     ln -s ${_version} "2"
+                elif [[ "x${_version}" == "x8" ]]; then
+                    ln -s ${_version} "8.0"
                 fi
             popd
         done
