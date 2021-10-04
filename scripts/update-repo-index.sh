@@ -2,7 +2,8 @@
 
 REPO_URL='http://repo.percona.com/'
 
-REPO_DATA="$( cat repo-index.html )"
+#REPO_DATA="$( cat repo-index.html )"
+REPO_DATA="$( wget --quiet -O - $REPO_URL )"
 
 elementIn() {
 	local e match="$1"
@@ -68,60 +69,56 @@ updateRepoData() {
 	done
 }
 
-PRODUCT_URL='https://www.percona.com/downloads/percona-postgresql-11/LATEST/'
-PRODUCT_NAME='Percona Distribution for PostgreSQL 11'
-PRODUCT_SELECTOR='Percona Distribution for PostgreSQL 11'
-PRODUCT_PREFIX='percona-postgresql-11/'
+# Percona Distribution for PostgreSQL
+checkAndUpdatePPG() {
+	# TODO check arguments
+	local PPG_VERSION=$1
 
-REPO_PRODUCT_SELECTOR='ppg-11\.'
-REPO_PRODUCT_PREFIX='ppg-'
+	PRODUCT_NAME="Percona Distribution for PostgreSQL $PPG_VERSION"
+	PRODUCT_SELECTOR="Percona Distribution for PostgreSQL $PPG_VERSION"
+	if [[ $PPG_VERSION -eq 11 ]]
+	then
+		PRODUCT_URL='https://www.percona.com/downloads/percona-postgresql-11/LATEST/'
+		PRODUCT_PREFIX='percona-postgresql-11/'
+	else
+		PRODUCT_URL="https://www.percona.com/downloads/postgresql-distribution-$PPG_VERSION/LATEST/"
+		PRODUCT_PREFIX="postgresql-distribution-$PPG_VERSION/"
+	fi
 
-checkProduct
-updateRepoData
+	REPO_PRODUCT_SELECTOR="ppg-$PPG_VERSION\."
+	REPO_PRODUCT_PREFIX='ppg-'
 
-PRODUCT_URL='https://www.percona.com/downloads/postgresql-distribution-12/LATEST/'
-PRODUCT_NAME='Percona Distribution for PostgreSQL 12'
-PRODUCT_SELECTOR='Percona Distribution for PostgreSQL 12'
-PRODUCT_PREFIX='postgresql-distribution-12/'
+	checkProduct
+	updateRepoData
+}
 
-REPO_PRODUCT_SELECTOR='ppg-12\.'
-REPO_PRODUCT_PREFIX='ppg-'
+# Percona Distribution for MongoDB
+checkAndUpdatePDMDB() {
+	# TODO check arguments
+	local PDMDB_VERSION=$1
 
-checkProduct
-updateRepoData
+	PRODUCT_URL="https://www.percona.com/downloads/percona-distribution-mongodb-$PDMDB_VERSION/LATEST/"
+	PRODUCT_NAME="Percona Distribution for MongoDB $PDMDB_VERSION"
+	PRODUCT_SELECTOR="percona distribution mongodb $PDMDB_VERSION"
+	PRODUCT_PREFIX="percona-distribution-mongodb-$PDMDB_VERSION/percona-distribution-mongodb-"
 
-PRODUCT_URL='https://www.percona.com/downloads/postgresql-distribution-13/LATEST/'
-PRODUCT_NAME='Percona Distribution for PostgreSQL 13'
-PRODUCT_SELECTOR='Percona Distribution for PostgreSQL 13'
-PRODUCT_PREFIX='postgresql-distribution-13/'
+	REPO_PRODUCT_SELECTOR="pdmdb-$PDMDB_VERSION\."
+	REPO_PRODUCT_PREFIX='pdmdb-'
 
-REPO_PRODUCT_SELECTOR='ppg-13\.'
-REPO_PRODUCT_PREFIX='ppg-'
+	checkProduct
+	updateRepoData
+}
 
-checkProduct
-updateRepoData
+for v in '11' '12' '13'
+do
+	checkAndUpdatePPG $v
+done
 
-PRODUCT_URL='https://www.percona.com/downloads/percona-distribution-mongodb-4.2/LATEST/'
-PRODUCT_NAME='Percona Distribution for MongoDB 4.2'
-PRODUCT_SELECTOR='percona distribution mongodb 4.2'
-PRODUCT_PREFIX='percona-distribution-mongodb-4.2/percona-distribution-mongodb-'
+for v in '4.2' '4.4'
+do
+	checkAndUpdatePDMDB $v
+done
 
-REPO_PRODUCT_SELECTOR='pdmdb-4.2\.'
-REPO_PRODUCT_PREFIX='pdmdb-'
-
-checkProduct
-updateRepoData
-
-PRODUCT_URL='https://www.percona.com/downloads/percona-distribution-mongodb-4.4/LATEST/'
-PRODUCT_NAME='Percona Distribution for MongoDB 4.4'
-PRODUCT_SELECTOR='percona distribution mongodb 4.4'
-PRODUCT_PREFIX='percona-distribution-mongodb-4.4/percona-distribution-mongodb-'
-
-REPO_PRODUCT_SELECTOR='pdmdb-4.4\.'
-REPO_PRODUCT_PREFIX='pdmdb-'
-
-checkProduct
-updateRepoData
 
 PRODUCT_URL='https://www.percona.com/downloads/percona-distribution-mysql-ps/LATEST/'
 PRODUCT_NAME='Percona Distribution for MySQL (ps)'
@@ -145,100 +142,5 @@ REPO_PRODUCT_PREFIX='pdpxc-'
 checkProduct
 updateRepoData
 
-### ### PRODUCT_URL='https://www.percona.com/downloads/percona-server-mongodb-3.6/LATEST/'
-### ### PRODUCT_NAME='Percona Server for MongoDB 3.6'
-### ### PRODUCT_SELECTOR='Percona Server for MongoDB 3.6'
-### ### PRODUCT_PREFIX='percona-server-mongodb-3.6/percona-server-mongodb-'
-### ### 
-### ### REPO_PRODUCT_SELECTOR='psmdb-36'
-### ### REPO_PRODUCT_PREFIX='psmdb-'
-### ### 
-### ### checkProduct
-### ### updateRepoData
-### ### 
-### ### PRODUCT_URL='https://www.percona.com/downloads/percona-server-mongodb-4.0/LATEST/'
-### ### PRODUCT_NAME='Percona Server for MongoDB 4.0'
-### ### PRODUCT_SELECTOR='Percona Server for MongoDB 4.0'
-### ### PRODUCT_PREFIX='percona-server-mongodb-4.0/percona-server-mongodb-'
-### ### 
-### ### REPO_PRODUCT_SELECTOR='psmdb-40'
-### ### REPO_PRODUCT_PREFIX='psmdb-'
-### ### 
-### ### checkProduct
-### ### updateRepoData
-### ### 
-### ### PRODUCT_URL='https://www.percona.com/downloads/percona-server-mongodb-4.2/LATEST/'
-### ### PRODUCT_NAME='Percona Server for MongoDB 4.2'
-### ### PRODUCT_SELECTOR='Percona Server for MongoDB 4.2'
-### ### PRODUCT_PREFIX='percona-server-mongodb-4.2/percona-server-mongodb-'
-### ### 
-### ### REPO_PRODUCT_SELECTOR='psmdb-42'
-### ### REPO_PRODUCT_PREFIX='psmdb-'
-### ### 
-### ### checkProduct
-### ### updateRepoData
-### ### 
-### ### PRODUCT_URL='https://www.percona.com/downloads/percona-server-mongodb-LATEST/'
-### ### PRODUCT_NAME='Percona Server for MongoDB 4.4'
-### ### PRODUCT_SELECTOR='Percona Server for MongoDB 4.4'
-### ### PRODUCT_PREFIX='percona-server-mongodb-LATEST/percona-server-mongodb-'
-### ### 
-### ### REPO_PRODUCT_SELECTOR='psmdb-44'
-### ### REPO_PRODUCT_PREFIX='psmdb-'
-### ### 
-### ### checkProduct
-### ### updateRepoData
-### ### 
-### ### PRODUCT_URL='https://www.percona.com/downloads/percona-server-mongodb-5.0/LATEST/'
-### ### PRODUCT_NAME='Percona Server for MongoDB 5.0'
-### ### PRODUCT_SELECTOR='Percona Server for MongoDB 5.0'
-### ### PRODUCT_PREFIX='percona-server-mongodb-5.0/percona-server-mongodb-'
-### ### 
-### ### REPO_PRODUCT_SELECTOR='psmdb-50'
-### ### REPO_PRODUCT_PREFIX='psmdb-'
-### ### 
-### ### checkProduct
-### ### updateRepoData
-### 
-### ### PRODUCT_URL="https://www.percona.com/downloads/Percona-Server-5.6/LATEST/"
-### ### PRODUCT_NAME='Percona Server for MySQL 5.6'
-### ### PRODUCT_SELECTOR='Percona Server for MySQL 5.6'
-### ### PRODUCT_PREFIX='Percona-Server-5.6/Percona-Server-'
-### ### 
-### ### REPO_PRODUCT_SELECTOR='ps-56'
-### ### REPO_PRODUCT_PREFIX='ps-'
-### ### 
-### ### checkProduct
-### ### updateRepoData
-### ### 
-### ### PRODUCT_URL="https://www.percona.com/downloads/Percona-Server-5.7/LATEST/"
-### ### PRODUCT_NAME='Percona Server for MySQL 5.7'
-### ### PRODUCT_SELECTOR='Percona Server for MySQL 5.7'
-### ### PRODUCT_PREFIX='Percona-Server-5.7/Percona-Server-'
-### ### 
-### ### REPO_PRODUCT_SELECTOR='ps-57'
-### ### REPO_PRODUCT_PREFIX='ps-'
-### ### 
-### ### checkProduct
-### ### updateRepoData
-### ### 
-### ### PRODUCT_URL="https://www.percona.com/downloads/Percona-Server-LATEST/"
-### ### PRODUCT_NAME='Percona Server for MySQL 8.0'
-### ### PRODUCT_SELECTOR='Percona Server for MySQL 8.0'
-### ### PRODUCT_PREFIX='Percona-Server-LATEST/Percona-Server-'
-### ### 
-### ### REPO_PRODUCT_SELECTOR='ps-80'
-### ### REPO_PRODUCT_PREFIX='ps-'
-### ### 
-### ### checkProduct
-### ### updateRepoData
 
 echo "$REPO_DATA"
-
-# TODO:
-# - Percona Toolkit - pt - https://www.percona.com/downloads/percona-toolkit/LATEST/
-# - Percona Monitoring and Management
-#   - pmm - https://www.percona.com/downloads/pmm/
-#   - pmm2 - https://www.percona.com/downloads/pmm2/
-# - Percona Backup for MongoDB - pbm - https://www.percona.com/downloads/percona-backup-mongodb/
-# - Percona XtraBackup - pxb - https://www.percona.com/downloads/Percona-XtraBackup-2.4/LATEST/ https://www.percona.com/downloads/Percona-XtraBackup-LATEST/
