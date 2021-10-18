@@ -53,7 +53,10 @@ checkProduct() {
 addRepoVersion() {
 	# TODO check arguments
 	local versionLine="$REPO_PRODUCT_PREFIX$1/"
-	local lineNumber=$( echo "$REPO_DATA" | grep -n  "$REPO_PRODUCT_SELECTOR" | tail -n 1 | cut -d: -f1 )
+	local lineNumber=$( echo "$REPO_DATA" | grep -n "$REPO_PRODUCT_SELECTOR" | tail -n 1 | cut -d: -f1 )
+
+	[[ -z "$lineNumber" || "$lineNumber" -eq 0 ]] && { echo 'Can`t find place to add product' >&2; exit 3; }
+
 	(( lineNumber++ ))
 	# Maybe awk selector is better here, like awk '/$REPO_PRODUCT_SELECTOR/ { print; print "new line"; next }1'
 	echo "$REPO_DATA" | awk "NR==$lineNumber { print "'"            </tr>" RS "            <tr>" RS "              <td><a href=\"'"$versionLine"'\">'"$versionLine"'</a></td>" }1'
@@ -66,6 +69,7 @@ updateRepoData() {
 	for v in "${REPO_VERSION_ADD[@]}"
 	do
 		REPO_DATA=$( addRepoVersion "$v" )
+		[[ $? -ne 0 ]] && { echo 'addRepoVersion() failed, exiting with failure' >&2; exit 1; }
 	done
 }
 
@@ -109,6 +113,29 @@ checkAndUpdatePDMDB() {
 	updateRepoData
 }
 
+# Parse command-line arguments into product name and product version
+# If second argument is 'new', new product version family is forced
+parseProductLine() {
+	[[ -z "$1" ]] && { echo "Product line should be provided to parseProductLine" >&2; exit 2; }
+	[[ $# -eq 2 && "$2" != 'new' ]] && { echo "Invalid arguments were provided to parseProductLine" >&2; exit 2; }
+
+	local myver="${1/*-/}"
+	[[ "$myver" == "$1" ]] && { echo "Product line does not seem to contain version" >&2; exit 2; }
+
+	REPO_PRODUCT_PREFIX="${1%$myver}"
+	[[ -z "$REPO_PRODUCT_PREFIX" ]] && { echo "Product line seems to be invalid" >&2; exit 2; }
+
+	if [[ "$2" != 'new' && "$myver" =~ '.' ]]
+	then
+		local subver="${myver%.*}"
+		REPO_PRODUCT_SELECTOR="${REPO_PRODUCT_PREFIX}${subver}\."
+	else
+		REPO_PRODUCT_SELECTOR="$REPO_PRODUCT_PREFIX"
+	fi
+
+	REPO_VERSION_ADD=( "$myver" )
+}
+
 for v in '11' '12' '13'
 do
 	checkAndUpdatePPG $v
@@ -141,6 +168,14 @@ REPO_PRODUCT_PREFIX='pdpxc-'
 
 checkProduct
 updateRepoData
+
+# Add products from command line
+for ver in "${BASH_ARGV[@]}"
+do
+	parseProductLine "$ver"
+	$( addRepoVersion "$v" &> /dev/null ) || parseProductLine "$ver" 'new'
+	updateRepoData
+done
 
 
 echo "$REPO_DATA"
