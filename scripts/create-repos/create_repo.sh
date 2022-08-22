@@ -14,13 +14,13 @@ APT_DISTS=$(echo ${5} | sed "s/,/ /g")
 LIMIT=${6}
 
 if [[ -z "${RHVERS}" ]]; then
-    RHVERS="6 7 8"
+    RHVERS="7 8 9"
 fi
 if [[ -z "${RH_ARCHES}" ]]; then
     RH_ARCHES="noarch x86_64"
 fi
 if [[ -z "${APT_DISTS}" ]]; then
-    APT_DISTS="stretch buster xenial bionic focal"
+    APT_DISTS="buster bullseye bionic focal jammy"
 fi
 if [[ -z "${APT_ARCHES}" ]]; then
     APT_ARCHES="source i386 amd64"
@@ -48,6 +48,8 @@ create_yum_repo() {
                     ln -s ${_version} "2"
                 elif [[ "x${_version}" == "x8" ]]; then
                     ln -s ${_version} "8.0"
+                elif [[ "x${_version}" == "x9" ]]; then
+                    ln -s ${_version} "9.0"
                 fi
             popd
         done
