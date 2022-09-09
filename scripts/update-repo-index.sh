@@ -27,7 +27,7 @@ checkProduct() {
 	#echo "${PRODUCT_VERSIONS[@]}"
 
 	# Repo versions: echo "$REPO_DATA" | grep '<a href="'"$REPO_PRODUCT_SELECTOR"
-	REPO_PRODUCT_VERSIONS=( $( echo "$REPO_DATA" | grep '<a href="'"$REPO_PRODUCT_SELECTOR" | sed -e 's@.*<a href="'"$REPO_PRODUCT_PREFIX"'\([^/]\+\)/".*>@\1@' ) )
+	REPO_PRODUCT_VERSIONS=( $( echo "$REPO_DATA" | grep '<a href="'"$REPO_PRODUCT_SELECTOR" | sed -e 's@.*<a href="'"$REPO_PRODUCT_PREFIX"'\([^/]\+\)/".*>@\1@' | uniq ) )
 
 	for v in "${REPO_PRODUCT_VERSIONS[@]}"
 	do
