@@ -152,7 +152,7 @@ PRODUCT_NAME='Percona Distribution for MySQL (ps)'
 PRODUCT_SELECTOR='percona distribution mysql ps 8.0'
 PRODUCT_PREFIX='percona-distribution-mysql-ps/percona-distribution-mysql-ps-'
 
-REPO_PRODUCT_SELECTOR='pdps-8.0\.'
+REPO_PRODUCT_SELECTOR='pdps-8.0'
 REPO_PRODUCT_PREFIX='pdps-'
 
 checkProduct
@@ -163,7 +163,7 @@ PRODUCT_NAME='Percona Distribution for MySQL (pxc)'
 PRODUCT_SELECTOR='percona distribution mysql pxc 8.0'
 PRODUCT_PREFIX='percona-distribution-mysql-pxc/percona-distribution-mysql-pxc-'
 
-REPO_PRODUCT_SELECTOR='pdpxc-8.0\.'
+REPO_PRODUCT_SELECTOR='pdpxc-8.0'
 REPO_PRODUCT_PREFIX='pdpxc-'
 
 checkProduct
