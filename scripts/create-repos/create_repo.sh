@@ -17,10 +17,10 @@ if [[ -z "${RHVERS}" ]]; then
     RHVERS="7 8 9"
 fi
 if [[ -z "${RH_ARCHES}" ]]; then
-    RH_ARCHES="noarch x86_64"
+    RH_ARCHES="noarch x86_64 arm64"
 fi
 if [[ -z "${APT_DISTS}" ]]; then
-    APT_DISTS="buster bullseye bionic focal jammy"
+    APT_DISTS="buster bullseye bookworm focal jammy"
 fi
 if [[ -z "${APT_ARCHES}" ]]; then
     APT_ARCHES="source i386 amd64"
