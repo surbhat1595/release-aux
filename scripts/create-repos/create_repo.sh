@@ -23,7 +23,7 @@ if [[ -z "${APT_DISTS}" ]]; then
     APT_DISTS="buster bullseye bookworm focal jammy"
 fi
 if [[ -z "${APT_ARCHES}" ]]; then
-    APT_ARCHES="source i386 amd64"
+    APT_ARCHES="source i386 amd64 arm64"
 fi
 if [[ -z "${LIMIT}" ]]; then
     LIMIT=5
