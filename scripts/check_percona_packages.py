@@ -33,6 +33,7 @@ repository_base_urls = {
 # Corresponding repository base URLs for RPM-based systems
 repository_base_urls_rpm = {
     'percona': 'http://repo.percona.com/percona/yum',
+    'original': 'http://repo.percona.com/release/yum',
     'tools': 'http://repo.percona.com/tools/yum',
 }
 
@@ -114,6 +115,19 @@ def get_distro():
         print(f"Error determining the distribution: {e}")
     return None
 
+# Function to enable repositories
+def enable_repositories(repos_to_enable):
+    enabled_repos = []
+    for repo in repos_to_enable:
+        if repo not in {'pdps', 'pdpxc', 'pdmdb'}:
+            command = f"sudo percona-release enable {repo} release"
+            try:
+                subprocess.run(command, shell=True, check=True)
+                enabled_repos.append(repo)
+            except subprocess.CalledProcessError as e:
+                print(f"Error enabling repository {repo}: {e}")
+    return enabled_repos
+
 # Main script
 if __name__ == "__main__":
     distro = get_distro()
@@ -122,7 +136,7 @@ if __name__ == "__main__":
         installed_packages = get_installed_packages_deb()
         get_package_repository_url = get_package_repository_url_deb
         is_repo_enabled = is_repo_enabled_deb
-    elif distro in ['centos', 'rhel', 'fedora', 'ol']:
+    elif distro in ['centos', 'rhel', 'ol']:
         print("Checking installed packages and repositories for RPM-based system...\n")
         installed_packages = get_installed_packages_rpm()
         get_package_repository_url = get_package_repository_url_rpm
@@ -148,7 +162,7 @@ if __name__ == "__main__":
                         packages_from_target_repos.append((package, repo_keyword))
                         valid_repo_found = True
                         break
-                elif distro in ['centos', 'rhel', 'fedora']:
+                elif distro in ['centos', 'rhel', 'ol']:
                     if check_package_repository_rpm(package, repo_keyword):
                         packages_from_target_repos.append((package, repo_keyword))
                         valid_repo_found = True
@@ -157,25 +171,6 @@ if __name__ == "__main__":
                 suggested_repos.append((package, repo_keywords))
                 repos_to_enable.update(repo_keywords)
 
-    if packages_from_target_repos:
-        print("\nPackages installed from the correct repositories:")
-        for pkg, repo in packages_from_target_repos:
-            print(f"  - {pkg}")
-
-    if suggested_repos:
-        print("\nPackages that should be installed from a different repository:")
-        for pkg, repos in suggested_repos:
-            print(f"  - {pkg}")
-            print(f"    Possible repositories: {', '.join([repo for repo in repos if repo not in exclude_repos])}")
-
-        print("\nPlease ensure the following repositories are enabled:")
-        print("  percona-release show")
-
-        print("\nTo enable the necessary repositories, run the following commands:")
-        for repo in repos_to_enable:
-            if repo not in exclude_repos:
-                print(f"  sudo percona-release enable {repo} release")
-    
     print("\nSummary:")
     if packages_from_target_repos:
         print(f"  - {len(packages_from_target_repos)} packages are installed from the correct repositories.")
@@ -184,3 +179,23 @@ if __name__ == "__main__":
         print(f"  - {len(repos_to_enable - exclude_repos)} repositories need to be enabled.")
     else:
         print("  - All packages are installed from their correct repositories.")
+
+    if suggested_repos:
+        print("\nPackages that should be installed from a different repository:")
+        for pkg, repos in suggested_repos:
+            print(f"  - {pkg}")
+            print(f"    Possible repositories: {', '.join([repo for repo in repos if repo not in exclude_repos])}")
+
+        print("\nTo enable the necessary repositories, run the following commands:")
+        for repo in repos_to_enable:
+            if repo not in exclude_repos:
+                print(f"  sudo percona-release enable {repo} release")
+
+        # Ask the user if they want to enable the suggested repositories
+        user_input = input("\nWould you like to enable all the mentioned repositories? (yes/no): ").strip().lower()
+        if user_input in {'yes', 'y'}:
+            enabled_repos = enable_repositories(repos_to_enable)
+            if enabled_repos:
+                print("\nThe following repositories were enabled:")
+                for repo in enabled_repos:
+                    print(f"  - {repo}")
