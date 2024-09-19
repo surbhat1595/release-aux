@@ -52,14 +52,7 @@ checkProduct() {
 
 addRepoVersion() {
 	# TODO check arguments
-	local versionLine="$REPO_PRODUCT_PREFIX$1/"
-	local lineNumber=$( echo "$REPO_DATA" | grep -n "$REPO_PRODUCT_SELECTOR" | tail -n 1 | cut -d: -f1 )
-
-	[[ -z "$lineNumber" || "$lineNumber" -eq 0 ]] && { echo 'Can`t find place to add product' >&2; exit 3; }
-
-	(( lineNumber++ ))
-	# Maybe awk selector is better here, like awk '/$REPO_PRODUCT_SELECTOR/ { print; print "new line"; next }1'
-	echo "$REPO_DATA" | awk "NR==$lineNumber { print "'"            </tr>" RS "            <tr>" RS "              <td><a href=\"'"$versionLine"'\">'"$versionLine"'</a></td>" }1'
+	echo "$REPO_DATA" | awk 'BEGIN { p = 0 } /^<!DOCTYPE/ { p = 1 } p'
 }
 
 updateRepoData() {
@@ -120,10 +113,10 @@ parseProductLine() {
 	[[ $# -eq 2 && "$2" != 'new' ]] && { echo "Invalid arguments were provided to parseProductLine" >&2; exit 2; }
 
 	local myver="${1/*-/}"
-	[[ "$myver" == "$1" ]] && { echo "Product line does not seem to contain version" >&2; exit 2; }
+	#[[ "$myver" == "$1" ]] && { echo "Product line does not seem to contain version" >&2; exit 2; }
 
 	REPO_PRODUCT_PREFIX="${1%$myver}"
-	[[ -z "$REPO_PRODUCT_PREFIX" ]] && { echo "Product line seems to be invalid" >&2; exit 2; }
+	#[[ -z "$REPO_PRODUCT_PREFIX" ]] && { echo "Product line seems to be invalid" >&2; exit 2; }
 
 	if [[ "$2" != 'new' && "$myver" =~ '.' ]]
 	then
