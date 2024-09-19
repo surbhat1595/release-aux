@@ -120,10 +120,10 @@ parseProductLine() {
 	[[ $# -eq 2 && "$2" != 'new' ]] && { echo "Invalid arguments were provided to parseProductLine" >&2; exit 2; }
 
 	local myver="${1/*-/}"
-	[[ "$myver" == "$1" ]] && { echo "Product line does not seem to contain version" >&2; exit 2; }
+	#[[ "$myver" == "$1" ]] && { echo "Product line does not seem to contain version" >&2; exit 2; }
 
 	REPO_PRODUCT_PREFIX="${1%$myver}"
-	[[ -z "$REPO_PRODUCT_PREFIX" ]] && { echo "Product line seems to be invalid" >&2; exit 2; }
+	#[[ -z "$REPO_PRODUCT_PREFIX" ]] && { echo "Product line seems to be invalid" >&2; exit 2; }
 
 	if [[ "$2" != 'new' && "$myver" =~ '.' ]]
 	then
